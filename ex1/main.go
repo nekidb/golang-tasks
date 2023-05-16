@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Human struct {
 	Height int
 	Age    int
@@ -12,4 +14,5 @@ type Action struct {
 }
 
 func main() {
+	fmt.Println("Hello")
 }
