@@ -1,34 +1,58 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"math/rand"
 	"time"
 )
 
-// функция бесконечно отправляет рандомные целые числа в канал out
-func writeToChan(out chan<- int) {
-	for {
-		out <- rand.Int()
-	}
+// функция создает канал в который бесконечно отправляет рандомные целые числа
+func writer(ctx context.Context) <-chan int {
+	out := make(chan int)
+
+	go func() {
+		defer close(out)
+
+		for {
+			select {
+			case out <- rand.Int():
+				continue
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+
+	return out
 }
 
-// функция бесконечно читает из канала in целые числа
-func readFromChan(in <-chan int) {
-	for {
-		<-in
-	}
+// функция бесконечно читает из канала числа
+func reader(ctx context.Context, in <-chan int) {
+	go func() {
+		for {
+			select {
+			case val := <-in:
+				fmt.Println(val)
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
 }
 
 func main() {
-	N := 5
-	ch := make(chan int)
+	// Одна горутина бесконечно пишет в канал, другая бесконечно читает из него.
+	// По истечении N секунд программа завершается
+	N := 1
 
-	// создаем горутину, которая отправляет значения в канал
-	go writeToChan(ch)
+	dur := time.Duration(N) * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), dur)
+	defer cancel()
 
-	// создаем горутину, которая читает значения из канала
-	go readFromChan(ch)
+	ch := writer(ctx)
+	reader(ctx, ch)
 
-	// ждем N секунд и завершаем программу
-	time.Sleep(time.Duration(N) * time.Second)
+	// Ждем достаточно, чтобы выполнился таймаут
+	time.Sleep(time.Duration(N+1) * time.Second)
 }
