@@ -11,13 +11,13 @@ func square(n int) int {
 
 // функция вычисляет квадрат числа n и отправляет в канал out
 func squareAndSend(n int, out chan<- int) {
-	out <- squared(n)
+	out <- square(n)
 }
 
 func main() {
 	nums := []int{2, 4, 6, 8, 10}
 
-	squared := make(chan int)
+	squared := make(chan int, len(nums))
 
 	// для каждого числа из num в отдельной горутине выполняем функцию squareAndSend
 	for _, num := range nums {
