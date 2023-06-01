@@ -10,14 +10,14 @@ func IsUnique(s string) bool {
 	// для регистронезависимости приводим строку к нижнему регистру
 	s = strings.ToLower(s)
 	// создаем мапу, которая будет содержать вхождения символов в строке
-	chars := make(map[rune]bool)
+	chars := make(map[rune]struct{})
 	// проходимся по каждому символу и проверяем, присутствует ли он в мапе
 	//  если да, то возвращаем false, иначе добавляем этот символ в мапу
 	for _, r := range s {
 		if _, ok := chars[r]; ok {
 			return false
 		}
-		chars[r] = true
+		chars[r] = struct{}{}
 	}
 	return true
 }
