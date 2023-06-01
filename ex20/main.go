@@ -8,9 +8,9 @@ import (
 // функция переворачивает слова в строке
 func revertWords(s string) string {
 	// разбиваем строку на слова
-	words := strings.Split(s, " ")
+	words := strings.Fields(s)
 
-	result := strings.Builder{}
+	var result strings.Builder
 	// начиная с конца массива слов добавляем каждое слово в билдер
 	for i := len(words) - 1; i >= 0; i-- {
 		result.WriteString(words[i])
